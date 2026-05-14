@@ -4,10 +4,8 @@ on:
     tags:
       - "v*"
   workflow_dispatch:
-
 permissions:
   contents: write
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -21,41 +19,53 @@ jobs:
           - arch: arm64
             compiler: aarch64-linux-gnu-gcc
             package: gcc-aarch64-linux-gnu
+          - arch: armv7
+            compiler: arm-linux-gnueabihf-gcc
+            package: gcc-arm-linux-gnueabihf
+          - arch: riscv64
+            compiler: riscv64-linux-gnu-gcc
+            package: gcc-riscv64-linux-gnu
+          - arch: s390x
+            compiler: s390x-linux-gnu-gcc
+            package: gcc-s390x-linux-gnu
+          - arch: ppc64le
+            compiler: powerpc64le-linux-gnu-gcc
+            package: gcc-powerpc64le-linux-gnu
+          - arch: mips
+            compiler: mips-linux-gnu-gcc
+            package: gcc-mips-linux-gnu
+          - arch: loong64
+            compiler: loongarch64-linux-gnu-gcc
+            package: gcc-loongarch64-linux-gnu
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
       - name: Install cross compiler
         if: matrix.package != ''
         run: |
           sudo apt-get update
           sudo apt-get install -y ${{ matrix.package }}
-
       - name: Build binary
         run: |
           mkdir -p dist
           ${{ matrix.compiler }} -O2 -o "dist/fragnesia-linux-${{ matrix.arch }}" ./fragnesia/fragnesia.c
           chmod +x "dist/fragnesia-linux-${{ matrix.arch }}"
-
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: fragnesia-${{ matrix.arch }}
           path: dist/fragnesia-linux-${{ matrix.arch }}
           if-no-files-found: error
-
   release:
     needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
       - name: Download artifacts
         uses: actions/download-artifact@v4.1.3
         with:
           path: release-assets
-
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
@@ -65,3 +75,9 @@ jobs:
           files: |
             release-assets/fragnesia-amd64/fragnesia-linux-amd64
             release-assets/fragnesia-arm64/fragnesia-linux-arm64
+            release-assets/fragnesia-armv7/fragnesia-linux-armv7
+            release-assets/fragnesia-riscv64/fragnesia-linux-riscv64
+            release-assets/fragnesia-s390x/fragnesia-linux-s390x
+            release-assets/fragnesia-ppc64le/fragnesia-linux-ppc64le
+            release-assets/fragnesia-mips/fragnesia-linux-mips
+            release-assets/fragnesia-loong64/fragnesia-linux-loong64
