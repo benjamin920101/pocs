@@ -34,9 +34,6 @@ jobs:
           - arch: mips
             compiler: mips-linux-gnu-gcc
             package: gcc-mips-linux-gnu
-          - arch: loong64
-            compiler: loongarch64-linux-gnu-gcc
-            package: gcc-loongarch64-linux-gnu
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -80,4 +77,3 @@ jobs:
             release-assets/fragnesia-s390x/fragnesia-linux-s390x
             release-assets/fragnesia-ppc64le/fragnesia-linux-ppc64le
             release-assets/fragnesia-mips/fragnesia-linux-mips
-            release-assets/fragnesia-loong64/fragnesia-linux-loong64
